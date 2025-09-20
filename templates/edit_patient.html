@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Patient - {{ patient.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-primary">✏️ Edit Patient Information</h2>
+                <a href="{{ url_for('patient_details', patient_id=patient.patient_id) }}" class="btn btn-outline-secondary">
+                    🔙 Back to Patient
+                </a>
+            </div>
+
+            <!-- Current Patient Info -->
+            <div class="alert alert-info" role="alert">
+                <h6 class="alert-heading">Current Patient: {{ patient.name }}</h6>
+                <p class="mb-0">
+                    <strong>ID:</strong> {{ patient.patient_id }} | 
+                    <strong>Registered:</strong> {{ patient.created_date_formatted }} | 
+                    <strong>Phone:</strong> {{ patient.phone }}
+                </p>
+            </div>
+
+            <!-- Edit Form -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">📝 Update Patient Details</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Patient Name *</label>
+                                    <input type="text" class="form-control" id="name" name="name" 
+                                           placeholder="Enter full name" 
+                                           value="{{ form_data.name if form_data else patient.name }}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="age" class="form-label">Age *</label>
+                                    <input type="number" class="form-control" id="age" name="age" 
+                                           min="0" max="150" 
+                                           value="{{ form_data.age if form_data and form_data.age else patient.age }}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="gender" class="form-label">Gender *</label>
+                                    <select class="form-control" id="gender" name="gender" required>
+                                        <option value="">Select Gender</option>
+                                        {% set current_gender = form_data.gender if form_data else patient.gender %}
+                                        <option value="Male" {{ 'selected' if current_gender == 'Male' else '' }}>Male</option>
+                                        <option value="Female" {{ 'selected' if current_gender == 'Female' else '' }}>Female</option>
+                                        <option value="Other" {{ 'selected' if current_gender == 'Other' else '' }}>Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">Phone Number *</label>
+                                    <input type="tel" class="form-control" id="phone" name="phone" 
+                                           placeholder="Enter 10-digit phone number" pattern="[0-9]{10}" 
+                                           maxlength="10" value="{{ form_data.phone if form_data else patient.phone }}" required>
+                                    <div class="form-text">Enter 10-digit phone number without spaces or dashes</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="weight" class="form-label">Current Weight (kg)</label>
+                                    <input type="number" class="form-control" id="weight" name="weight" 
+                                           step="0.1" min="0" placeholder="Enter weight in kg"
+                                           value="{{ form_data.weight if form_data and form_data.weight else (patient.weight if patient.weight else '') }}">
+                                    <div class="form-text">Optional - latest weight information</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registration_date" class="form-label">Registration Date</label>
+                                    <input type="date" class="form-control" id="registration_date" 
+                                           name="registration_date" value="{{ patient.created_date[:10] }}" disabled>
+                                    <div class="form-text">Registration date cannot be changed</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="conditions" class="form-label">Medical Conditions</label>
+                            <textarea class="form-control" id="conditions" name="conditions" rows="3" 
+                                      placeholder="Enter any existing conditions (diabetes, hypertension, etc.)">{{ form_data.conditions if form_data else (patient.conditions if patient.conditions else '') }}</textarea>
+                            <div class="form-text">Optional - list any known medical conditions</div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        ✅ Update Patient Information
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-grid">
+                                    <a href="{{ url_for('patient_details', patient_id=patient.patient_id) }}" 
+                                       class="btn btn-secondary btn-lg">
+                                        ❌ Cancel Changes
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Warning Box -->
+            <div class="alert alert-warning mt-4" role="alert">
+                <h6 class="alert-heading">⚠️ Important Notes:</h6>
+                <ul class="mb-0">
+                    <li><strong>Phone Number:</strong> Changing this will check for duplicates with other patients</li>
+                    <li><strong>Registration Date:</strong> Cannot be changed to maintain record integrity</li>
+                    <li><strong>Visit History:</strong> All visit records will remain unchanged</li>
+                    <li><strong>Required Fields:</strong> Name, Age, Gender, and Phone Number must be filled</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

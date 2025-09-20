@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}{{ summary.patient.name }} - Patient Details{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2><i class="fas fa-user"></i> {{ summary.patient.name }}</h2>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{{ url_for('edit_patient', patient_id=summary.patient.patient_id) }}" class="btn btn-outline-primary me-2">
+            <i class="fas fa-edit"></i> Edit Patient
+        </a>
+        <a href="{{ url_for('confirm_delete_patient', patient_id=summary.patient.patient_id) }}" 
+           class="btn btn-outline-danger me-2">
+            <i class="bi bi-trash"></i> Delete Patient
+        </a>
+        <a href="{{ url_for('search') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Search
+        </a>
+    </div>
+</div>
+
+<!-- Patient Information Card -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <i class="fas fa-user"></i> Patient Information
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <!-- Visit Count Status -->
+                        {% if summary.is_new_patient %}
+                            <span class="new-patient">
+                                <i class="fas fa-star"></i> New Patient (No visits yet)
+                            </span>
+                        {% else %}
+                            <span class="visit-count">
+                                <i class="fas fa-history"></i> {{ summary.visit_count }} visit{{ 's' if summary.visit_count != 1 else '' }} recorded
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Age:</strong> {{ summary.patient.age }} years</p>
+                        <p><strong>Gender:</strong> {{ summary.patient.gender }}</p>
+                        <p><strong>Phone:</strong> <i class="fas fa-phone"></i> {{ summary.patient.phone }}</p>
+                        <p><strong>Current Weight:</strong> {{ summary.last_weight or 'Not recorded' }} kg</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Medical Conditions:</strong> {{ summary.patient.conditions or 'None recorded' }}</p>
+                        <p><strong>Registration Date:</strong> 
+                           <span class="date-badge">{{ summary.patient.created_date_formatted }}</span>
+                        </p>
+                        <p><strong>Patient ID:</strong> #{{ summary.patient.patient_id }}</p>
+                        {% if summary.last_visit %}
+                        <p><strong>Last Visit:</strong> 
+                           <span class="date-badge">{{ summary.last_visit.visit_date_formatted }}</span>
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Visit Status Alert -->
+                {% if summary.is_new_patient %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> 
+                    <strong>First Visit:</strong> This is {{ summary.patient.name }}'s first visit to the clinic.
+                </div>
+                {% else %}
+                <div class="alert alert-warning">
+                    <i class="fas fa-redo"></i> 
+                    <strong>Returning Patient:</strong> {{ summary.patient.name }} has visited the clinic 
+                    <strong>{{ summary.visit_count }} time{{ 's' if summary.visit_count != 1 else '' }}</strong> before.
+                    {% if summary.last_visit %}
+                    Last visit was on {{ summary.last_visit.visit_date_formatted }}.
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add New Visit Form -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-plus"></i> 
+                {% if summary.is_new_patient %}
+                    Record First Visit
+                {% else %}
+                    Add New Visit (Visit #{{ summary.visit_count + 1 }})
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('add_visit_route', patient_id=summary.patient.patient_id) }}">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="visit_date" class="form-label">Visit Date</label>
+                                <input type="date" class="form-control" id="visit_date" name="visit_date" 
+                                       value="{{ current_date }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="symptoms" class="form-label">Symptoms</label>
+                                <textarea class="form-control" id="symptoms" name="symptoms" rows="3" 
+                                          placeholder="Describe patient's symptoms"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="medicines" class="form-label">Medicines Prescribed</label>
+                                <textarea class="form-control" id="medicines" name="medicines" rows="3" 
+                                          placeholder="List medicines and dosage"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="weight" class="form-label">Current Weight (kg)</label>
+                                <input type="number" class="form-control" id="weight" name="weight" 
+                                       step="0.1" min="0" placeholder="Enter weight in kg">
+                            </div>
+                            <div class="mb-3">
+                                <label for="blood_pressure" class="form-label">Blood Pressure</label>
+                                <input type="text" class="form-control" id="blood_pressure" name="blood_pressure" 
+                                       placeholder="e.g., 120/80">
+                            </div>
+                            <div class="mb-3">
+                                <label for="diet_notes" class="form-label">Diet Recommendations</label>
+                                <textarea class="form-control" id="diet_notes" name="diet_notes" rows="3" 
+                                          placeholder="Diet and lifestyle advice"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Additional Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="2" 
+                                  placeholder="Any other observations or instructions"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-save"></i> 
+                        {% if summary.is_new_patient %}
+                            Record First Visit
+                        {% else %}
+                            Add Visit #{{ summary.visit_count + 1 }}
+                        {% endif %}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Visit History -->
+{% if visits %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-history"></i> Visit History ({{ visits|length }} visit{{ 's' if visits|length != 1 else '' }})
+            </div>
+            <div class="card-body">
+                {% for visit in visits %}
+                {% set visit_number = visits|length - loop.index0 %}
+                {% set is_first_visit = visit_number == 1 %}
+                <div class="card mb-3">
+                    <div class="card-header">
+                        {% if is_first_visit %}
+                            <i class="fas fa-star text-warning"></i> First Visit - {{ visit.visit_date_formatted }}
+                        {% else %}
+                            <i class="fas fa-redo text-primary"></i> Return Visit #{{ visit_number }} - {{ visit.visit_date_formatted }}
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                {% if visit.symptoms %}
+                                <p><strong><i class="fas fa-stethoscope"></i> Symptoms:</strong><br>{{ visit.symptoms }}</p>
+                                {% endif %}
+                                {% if visit.medicines %}
+                                <p><strong><i class="fas fa-pills"></i> Medicines:</strong><br>{{ visit.medicines }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                {% if visit.weight %}
+                                <p><strong><i class="fas fa-weight"></i> Weight:</strong> {{ visit.weight }} kg</p>
+                                {% endif %}
+                                {% if visit.blood_pressure %}
+                                <p><strong><i class="fas fa-heartbeat"></i> Blood Pressure:</strong> {{ visit.blood_pressure }}</p>
+                                {% endif %}
+                                {% if visit.diet_notes %}
+                                <p><strong><i class="fas fa-apple-alt"></i> Diet Notes:</strong><br>{{ visit.diet_notes }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if visit.notes %}
+                        <p><strong><i class="fas fa-sticky-note"></i> Additional Notes:</strong><br>{{ visit.notes }}</p>
+                        {% endif %}
+                        
+                        <!-- Visit Actions -->
+                        <div class="mt-3 pt-3 border-top">
+                            <div class="text-end">
+                                <a href="{{ url_for('delete_visit_route', visit_id=visit.visit_id, patient_id=summary.patient.patient_id) }}" 
+                                   class="btn btn-outline-danger btn-sm"
+                                   onclick="return confirm('⚠️ Delete this visit record?\\n\\nThis will remove:\\n- All symptoms and treatment notes\\n- Medicine prescriptions\\n- Weight and vital signs\\n\\nThis action can be undone from the Admin panel.')">
+                                    <i class="bi bi-trash"></i> Delete Visit
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Set today's date as default
+    document.getElementById('visit_date').valueAsDate = new Date();
+</script>
+{% endblock %}

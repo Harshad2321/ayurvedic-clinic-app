@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Search Patients - Ayurvedic Clinic{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2><i class="fas fa-search"></i> Search Patients</h2>
+    </div>
+</div>
+
+<!-- Search Form -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-search"></i> Patient Search
+            </div>
+            <div class="card-body">
+                <form method="GET" action="{{ url_for('search') }}">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <input type="text" class="form-control form-control-lg" 
+                                   name="q" value="{{ search_term }}" 
+                                   placeholder="Enter patient name or phone number"
+                                   autocomplete="off">
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search Results -->
+{% if search_term %}
+    {% if patients %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-users"></i> Search Results ({{ patients|length }} found)
+                </div>
+                <div class="card-body">
+                    {% for patient in patients %}
+                    <div class="patient-card card mb-3">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h5 class="card-title mb-2">
+                                        <i class="fas fa-user"></i> {{ patient.name }}
+                                        <!-- Visit Count Badge -->
+                                        {% if patient.is_new_patient %}
+                                            <span class="new-patient ms-2">
+                                                <i class="fas fa-star"></i> New Patient
+                                            </span>
+                                        {% else %}
+                                            <span class="visit-count ms-2">
+                                                <i class="fas fa-history"></i> {{ patient.visit_count }} visit{{ 's' if patient.visit_count != 1 else '' }}
+                                            </span>
+                                        {% endif %}
+                                    </h5>
+                                    <p class="card-text mb-1">
+                                        <strong>Age:</strong> {{ patient.age }} years | 
+                                        <strong>Gender:</strong> {{ patient.gender }}
+                                    </p>
+                                    <p class="card-text mb-1">
+                                        <i class="fas fa-phone"></i> {{ patient.phone }}
+                                    </p>
+                                    <p class="card-text mb-1">
+                                        <strong>Weight:</strong> {{ patient.weight or 'Not recorded' }} kg
+                                    </p>
+                                    <p class="card-text mb-1">
+                                        <strong>Conditions:</strong> {{ patient.conditions or 'None recorded' }}
+                                    </p>
+                                    <span class="date-badge">
+                                        <i class="fas fa-calendar"></i> Registered: {{ patient.created_date_formatted }}
+                                    </span>
+                                    
+                                    <!-- Patient Status -->
+                                    {% if patient.is_returning_patient %}
+                                    <div class="mt-2">
+                                        <span class="returning-patient">
+                                            <i class="fas fa-redo"></i> Returning Patient
+                                        </span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <a href="{{ url_for('patient_details', patient_id=patient.patient_id) }}" 
+                                       class="btn btn-primary btn-lg">
+                                        <i class="fas fa-eye"></i> Select Patient
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h4>No Patients Found</h4>
+                    <p class="text-muted">No patients match your search for "{{ search_term }}"</p>
+                    <p class="text-muted">Try searching with a different name or phone number.</p>
+                    <a href="{{ url_for('add_patient_route') }}" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Add New Patient
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{% else %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h4>Search for Patients</h4>
+                <p class="text-muted">Enter a patient name or phone number in the search box above.</p>
+                <p class="text-muted">You can also <a href="{{ url_for('all_patients') }}">view all patients</a>.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

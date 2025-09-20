@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📋 Audit Log - Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .admin-header {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 123, 255, 0.3);
+        }
+        
+        .audit-entry {
+            background: white;
+            border-radius: 10px;
+            border-left: 5px solid #007bff;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .audit-entry:hover {
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+        
+        .action-badge {
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: bold;
+            padding: 0.5em 1em;
+        }
+        
+        .action-create { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); }
+        .action-update { background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%); }
+        .action-delete { background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); }
+        .action-soft-delete { background: linear-gradient(135deg, #fd7e14 0%, #e55d00 100%); }
+        .action-restore { background: linear-gradient(135deg, #17a2b8 0%, #138496 100%); }
+        .action-login { background: linear-gradient(135deg, #6610f2 0%, #6f42c1 100%); }
+        .action-other { background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%); }
+        
+        .back-btn {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+            color: white;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .json-data {
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+        
+        .filter-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            border: 2px solid #dee2e6;
+        }
+        
+        .timeline-indicator {
+            width: 4px;
+            background: linear-gradient(to bottom, #007bff, #6610f2);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <!-- Header -->
+        <div class="admin-header p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="mb-1">
+                        <i class="bi bi-journal-text"></i>
+                        Admin Panel - Audit Log
+                    </h1>
+                    <p class="mb-0 opacity-75">Complete system activity tracking and compliance monitoring</p>
+                </div>
+                <div>
+                    <a href="{{ url_for('dashboard') }}" class="btn back-btn me-2">
+                        <i class="bi bi-arrow-left"></i> Dashboard
+                    </a>
+                    <a href="{{ url_for('admin_deleted_records') }}" class="btn btn-outline-light">
+                        <i class="bi bi-trash"></i> Deleted Records
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Dashboard -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stats-card p-3 text-center">
+                    <h4 class="text-success">
+                        <i class="bi bi-plus-circle-fill"></i>
+                        {{ audit_logs|selectattr('1', 'match', '.*CREATE.*')|list|length }}
+                    </h4>
+                    <p class="text-muted mb-0 small">Records Created</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card p-3 text-center">
+                    <h4 class="text-warning">
+                        <i class="bi bi-pencil-fill"></i>
+                        {{ audit_logs|selectattr('1', 'match', '.*UPDATE.*')|list|length }}
+                    </h4>
+                    <p class="text-muted mb-0 small">Records Updated</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card p-3 text-center">
+                    <h4 class="text-danger">
+                        <i class="bi bi-trash-fill"></i>
+                        {{ audit_logs|selectattr('1', 'match', '.*DELETE.*')|list|length }}
+                    </h4>
+                    <p class="text-muted mb-0 small">Records Deleted</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card p-3 text-center">
+                    <h4 class="text-primary">
+                        <i class="bi bi-activity"></i>
+                        {{ audit_logs|length }}
+                    </h4>
+                    <p class="text-muted mb-0 small">Total Activities</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Audit Log Entries -->
+        {% if audit_logs %}
+        <div class="row">
+            <div class="col-md-1">
+                <div class="timeline-indicator h-100"></div>
+            </div>
+            <div class="col-md-11">
+                <h3 class="mb-4">
+                    <i class="bi bi-clock-history"></i>
+                    Recent Activity Timeline
+                </h3>
+                
+                {% for log in audit_logs %}
+                <div class="audit-entry p-4 mb-3">
+                    <div class="row align-items-start">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center mb-2">
+                                <h5 class="mb-0 me-3">
+                                    <i class="bi bi-activity"></i>
+                                    {{ log[1] }}
+                                </h5>
+                                
+                                {% set action_class = 'action-other' %}
+                                {% if 'CREATE' in log[1] %}
+                                    {% set action_class = 'action-create' %}
+                                {% elif 'UPDATE' in log[1] %}
+                                    {% set action_class = 'action-update' %}
+                                {% elif 'SOFT_DELETE' in log[1] %}
+                                    {% set action_class = 'action-soft-delete' %}
+                                {% elif 'DELETE' in log[1] %}
+                                    {% set action_class = 'action-delete' %}
+                                {% elif 'RESTORE' in log[1] %}
+                                    {% set action_class = 'action-restore' %}
+                                {% elif 'LOGIN' in log[1] %}
+                                    {% set action_class = 'action-login' %}
+                                {% endif %}
+                                
+                                <span class="badge action-badge {{ action_class }}">
+                                    {{ log[1].split('_')[0] }}
+                                </span>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>Table:</strong> {{ log[2] }}</p>
+                                    <p class="mb-1"><strong>Record ID:</strong> {{ log[3] or 'N/A' }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>User:</strong> {{ log[6] }}</p>
+                                    <p class="mb-1"><strong>Timestamp:</strong> {{ log[7][:19] }}</p>
+                                </div>
+                            </div>
+                            
+                            {% if log[8] %}
+                            <div class="mt-2">
+                                <small class="text-muted">Additional Notes:</small>
+                                <div class="alert alert-light py-2 mb-0">{{ log[8] }}</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4">
+                            {% if log[4] or log[5] %}
+                            <div class="mb-2">
+                                <small class="text-muted">Data Changes:</small>
+                                
+                                {% if log[4] %}
+                                <div class="mb-1">
+                                    <small class="text-danger">Old Value:</small>
+                                    <div class="json-data p-2">{{ log[4][:100] }}{% if log[4]|length > 100 %}...{% endif %}</div>
+                                </div>
+                                {% endif %}
+                                
+                                {% if log[5] %}
+                                <div>
+                                    <small class="text-success">New Value:</small>
+                                    <div class="json-data p-2">{{ log[5][:100] }}{% if log[5]|length > 100 %}...{% endif %}</div>
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                            
+                            <div class="text-end">
+                                <small class="text-muted">
+                                    <i class="bi bi-hash"></i>
+                                    Audit ID: {{ log[0] }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Load More Button -->
+        <div class="row mt-4">
+            <div class="col text-center">
+                <button class="btn btn-outline-primary btn-lg" onclick="loadMoreLogs()">
+                    <i class="bi bi-arrow-down-circle"></i>
+                    Load More Entries
+                </button>
+            </div>
+        </div>
+        
+        {% else %}
+        <div class="row">
+            <div class="col text-center">
+                <div class="alert alert-info">
+                    <h3><i class="bi bi-info-circle-fill"></i></h3>
+                    <h4>No Audit Logs</h4>
+                    <p class="mb-0">No system activities have been logged yet. Start using the system to see audit entries here.</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- System Information -->
+        <div class="row mt-4">
+            <div class="col">
+                <div class="alert alert-info">
+                    <h5><i class="bi bi-shield-check-fill"></i> Audit System Information:</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="mb-0">
+                                <li><strong>Comprehensive Logging:</strong> All CRUD operations tracked</li>
+                                <li><strong>Data Integrity:</strong> Before/after values captured</li>
+                                <li><strong>User Tracking:</strong> Every action linked to user</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="mb-0">
+                                <li><strong>Compliance Ready:</strong> Meets regulatory requirements</li>
+                                <li><strong>Real-time Monitoring:</strong> Immediate activity tracking</li>
+                                <li><strong>Secure Storage:</strong> Tamper-resistant audit trail</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Enhanced UI interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate entries on scroll
+            const entries = document.querySelectorAll('.audit-entry, .stats-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+            
+            entries.forEach(entry => {
+                entry.style.opacity = '0';
+                entry.style.transform = 'translateY(20px)';
+                entry.style.transition = 'all 0.5s ease';
+                observer.observe(entry);
+            });
+            
+            // Add click-to-expand for JSON data
+            document.querySelectorAll('.json-data').forEach(element => {
+                element.addEventListener('click', function() {
+                    if (this.style.maxHeight === 'none') {
+                        this.style.maxHeight = '100px';
+                        this.style.overflow = 'hidden';
+                    } else {
+                        this.style.maxHeight = 'none';
+                        this.style.overflow = 'visible';
+                    }
+                });
+                
+                element.style.cursor = 'pointer';
+                element.title = 'Click to expand/collapse';
+            });
+        });
+        
+        function loadMoreLogs() {
+            // This would typically make an AJAX request for more logs
+            alert('Load more functionality would fetch additional audit entries via AJAX');
+        }
+        
+        // Auto-refresh every 30 seconds for real-time monitoring
+        setInterval(() => {
+            // Only refresh if user is actively viewing (tab is visible)
+            if (!document.hidden) {
+                window.location.reload();
+            }
+        }, 30000);
+        
+        // Show live timestamp updates
+        function updateTimestamps() {
+            document.querySelectorAll('[data-timestamp]').forEach(element => {
+                const timestamp = element.getAttribute('data-timestamp');
+                const date = new Date(timestamp);
+                const now = new Date();
+                const diffMinutes = Math.floor((now - date) / (1000 * 60));
+                
+                if (diffMinutes < 60) {
+                    element.textContent = `${diffMinutes} minutes ago`;
+                } else if (diffMinutes < 1440) {
+                    element.textContent = `${Math.floor(diffMinutes / 60)} hours ago`;
+                }
+            });
+        }
+        
+        // Update timestamps every minute
+        setInterval(updateTimestamps, 60000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Duplicate Patient Detected{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <!-- Alert -->
+            <div class="alert alert-warning" role="alert">
+                <h4 class="alert-heading">⚠️ Duplicate Patient Detected!</h4>
+                <p>A patient with phone number <strong>{{ new_patient.phone }}</strong> already exists in the system.</p>
+                <hr>
+                <p class="mb-0">What would you like to do?</p>
+            </div>
+
+            <div class="row">
+                <!-- Existing Patient -->
+                <div class="col-md-6">
+                    <div class="card border-primary">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">🏥 Existing Patient</h5>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="card-title">{{ existing_patient.name }}</h6>
+                            <p class="card-text">
+                                <strong>Age:</strong> {{ existing_patient.age }}<br>
+                                <strong>Gender:</strong> {{ existing_patient.gender }}<br>
+                                <strong>Phone:</strong> {{ existing_patient.phone }}<br>
+                                {% if existing_patient.weight %}
+                                <strong>Weight:</strong> {{ existing_patient.weight }} kg<br>
+                                {% endif %}
+                                {% if existing_patient.conditions %}
+                                <strong>Conditions:</strong> {{ existing_patient.conditions }}<br>
+                                {% endif %}
+                                <strong>Registered:</strong> {{ existing_patient.created_date_formatted }}
+                            </p>
+                            
+                            <div class="d-grid gap-2">
+                                <a href="{{ url_for('patient_details', patient_id=existing_patient.patient_id) }}" 
+                                   class="btn btn-success">
+                                    📋 Go to Existing Patient
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Patient Info -->
+                <div class="col-md-6">
+                    <div class="card border-warning">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0">➕ New Patient Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="card-title">{{ new_patient.name }}</h6>
+                            <p class="card-text">
+                                <strong>Age:</strong> {{ new_patient.age }}<br>
+                                <strong>Gender:</strong> {{ new_patient.gender }}<br>
+                                <strong>Phone:</strong> {{ new_patient.phone }}<br>
+                                {% if new_patient.weight %}
+                                <strong>Weight:</strong> {{ new_patient.weight }} kg<br>
+                                {% endif %}
+                                {% if new_patient.conditions %}
+                                <strong>Conditions:</strong> {{ new_patient.conditions }}<br>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">🤔 Choose Action</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="d-grid">
+                                        <a href="{{ url_for('patient_details', patient_id=existing_patient.patient_id) }}" 
+                                           class="btn btn-success btn-lg">
+                                            ✅ Use Existing Patient<br>
+                                            <small>This was a mistake</small>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="d-grid">
+                                        <a href="{{ url_for('force_add_patient') }}?name={{ new_patient.name }}&age={{ new_patient.age }}&gender={{ new_patient.gender }}&phone={{ new_patient.phone }}&weight={{ new_patient.weight or '' }}&conditions={{ new_patient.conditions or '' }}" 
+                                           class="btn btn-warning btn-lg">
+                                            ⚠️ Add Anyway<br>
+                                            <small>Different person</small>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="d-grid">
+                                        <a href="{{ url_for('add_patient_route') }}" 
+                                           class="btn btn-secondary btn-lg">
+                                            🔙 Start Over<br>
+                                            <small>Go back to form</small>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Information Box -->
+            <div class="alert alert-info mt-4" role="alert">
+                <h6 class="alert-heading">💡 Tips for Your Mom:</h6>
+                <ul class="mb-0">
+                    <li><strong>Use Existing Patient:</strong> Click this if the patient already visited before (most common)</li>
+                    <li><strong>Add Anyway:</strong> Only if this is truly a different person with the same phone number</li>
+                    <li><strong>Start Over:</strong> If you want to change the information and try again</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

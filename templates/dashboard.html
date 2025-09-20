@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Ayurvedic Clinic{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="text-center mb-4" style="color: #2E8B57;">
+            <i class="fas fa-leaf"></i> Ayurvedic Clinic Management System
+        </h1>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stats-card">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-2x mb-2"></i>
+                <h3>{{ stats.total_patients }}</h3>
+                <p>Total Patients</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stats-card">
+            <div class="card-body text-center">
+                <i class="fas fa-clipboard-list fa-2x mb-2"></i>
+                <h3>{{ stats.total_visits }}</h3>
+                <p>Total Visits</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stats-card">
+            <div class="card-body text-center">
+                <i class="fas fa-user-plus fa-2x mb-2"></i>
+                <h3>{{ stats.recent_patients }}</h3>
+                <p>New (7 days)</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stats-card">
+            <div class="card-body text-center">
+                <i class="fas fa-calendar-check fa-2x mb-2"></i>
+                <h3>{{ stats.recent_visits }}</h3>
+                <p>Recent Visits</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-bolt"></i> Quick Actions
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <a href="{{ url_for('add_patient_route') }}" class="btn btn-primary btn-lg w-100 mb-2">
+                            <i class="fas fa-user-plus"></i> Add New Patient
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="{{ url_for('search') }}" class="btn btn-outline-primary btn-lg w-100 mb-2">
+                            <i class="fas fa-search"></i> Search Patients
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="{{ url_for('all_patients') }}" class="btn btn-outline-primary btn-lg w-100 mb-2">
+                            <i class="fas fa-users"></i> View All Patients
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Admin Panel Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-warning">
+            <div class="card-header bg-warning text-dark">
+                <i class="bi bi-shield-lock"></i> Admin Panel - Enterprise Management
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <a href="{{ url_for('admin_deleted_records') }}" class="btn btn-outline-danger btn-lg w-100 mb-2">
+                            <i class="bi bi-trash"></i> Manage Deleted Records
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{{ url_for('admin_audit_log') }}" class="btn btn-outline-info btn-lg w-100 mb-2">
+                            <i class="bi bi-journal-text"></i> System Audit Log
+                        </a>
+                    </div>
+                </div>
+                <div class="alert alert-warning mt-3 mb-0">
+                    <small><i class="bi bi-info-circle"></i> Enterprise features: Comprehensive audit trails, data recovery, and compliance monitoring</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Patients -->
+{% if recent_patients %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-history"></i> Recently Added Patients
+            </div>
+            <div class="card-body">
+                {% for patient in recent_patients %}
+                <div class="patient-card card">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h5 class="card-title mb-1">
+                                    <i class="fas fa-user"></i> {{ patient.name }}
+                                </h5>
+                                <p class="card-text mb-1">
+                                    <strong>Age:</strong> {{ patient.age }} years | 
+                                    <strong>Gender:</strong> {{ patient.gender }}
+                                </p>
+                                <p class="card-text mb-1">
+                                    <i class="fas fa-phone"></i> {{ patient.phone }}
+                                </p>
+                                <p class="card-text mb-1">
+                                    <strong>Conditions:</strong> {{ patient.conditions or 'None recorded' }}
+                                </p>
+                                <span class="date-badge">
+                                    <i class="fas fa-calendar"></i> Registered: {{ patient.created_date_formatted }}
+                                </span>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <a href="{{ url_for('patient_details', patient_id=patient.patient_id) }}" 
+                                   class="btn btn-primary">
+                                    <i class="fas fa-eye"></i> View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="fas fa-user-plus fa-3x text-muted mb-3"></i>
+                <h4>No Patients Yet</h4>
+                <p class="text-muted">Start by adding your first patient to the clinic.</p>
+                <a href="{{ url_for('add_patient_route') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-user-plus"></i> Add First Patient
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

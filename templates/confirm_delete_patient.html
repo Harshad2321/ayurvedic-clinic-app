@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚠️ Delete Patient - Ayurvedic Clinic</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .danger-zone {
+            border: 3px solid #dc3545;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #ffe6e6 0%, #fff0f0 100%);
+            box-shadow: 0 10px 30px rgba(220, 53, 69, 0.3);
+        }
+        
+        .soft-delete-zone {
+            border: 3px solid #fd7e14;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #fff3e0 0%, #fffaf5 100%);
+            box-shadow: 0 10px 30px rgba(253, 126, 20, 0.3);
+        }
+        
+        .confirmation-input {
+            background: #fff5f5;
+            border: 2px solid #fed7d7;
+            border-radius: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .patient-summary {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .visits-preview {
+            max-height: 200px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .back-btn {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col">
+                <div class="d-flex align-items-center">
+                    <a href="{{ url_for('dashboard') }}" class="btn back-btn me-3">
+                        <i class="bi bi-arrow-left"></i> Back to Dashboard
+                    </a>
+                    <h1 class="mb-0">
+                        <i class="bi bi-exclamation-triangle-fill text-danger"></i>
+                        Delete Patient Warning
+                    </h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- Patient Summary -->
+        <div class="row mb-4">
+            <div class="col-md-8 mx-auto">
+                <div class="patient-summary p-4">
+                    <h3 class="text-primary mb-3">
+                        <i class="bi bi-person-fill"></i>
+                        {{ patient[1] }} {{ patient[2] }}
+                    </h3>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Phone:</strong> {{ patient[3] }}</p>
+                            <p><strong>Age:</strong> {{ patient[4] }}</p>
+                            <p><strong>Gender:</strong> {{ patient[5] }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Total Visits:</strong> 
+                                <span class="badge bg-info fs-6">{{ visit_count }}</span>
+                            </p>
+                            <p><strong>Registered:</strong> {{ patient[8][:10] }}</p>
+                        </div>
+                    </div>
+                    
+                    {% if patient[6] %}
+                    <div class="mt-3">
+                        <p><strong>Medical History:</strong></p>
+                        <div class="bg-light p-3 rounded">{{ patient[6] }}</div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if visits %}
+                    <div class="mt-4">
+                        <h5>Recent Visits Preview:</h5>
+                        <div class="visits-preview p-3">
+                            {% for visit in visits %}
+                            <div class="mb-2 p-2 bg-white rounded">
+                                <strong>{{ visit[2][:10] }}</strong> - {{ visit[3][:100] }}
+                                {% if visit[3]|length > 100 %}...{% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Deletion Options -->
+        <div class="row">
+            <!-- Soft Delete (Recommended) -->
+            <div class="col-lg-6 mb-4">
+                <div class="soft-delete-zone p-4">
+                    <h3 class="text-warning mb-3">
+                        <i class="bi bi-recycle"></i>
+                        Soft Delete (Recommended)
+                    </h3>
+                    
+                    <div class="alert alert-warning">
+                        <strong>Safe Option:</strong> Patient will be hidden but can be restored later with all data intact.
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('delete_patient_route', patient_id=patient[0]) }}">
+                        <input type="hidden" name="action" value="soft_delete">
+                        
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Reason for deletion:</strong></label>
+                            <select name="reason" class="form-select" required>
+                                <option value="">Select reason...</option>
+                                <option value="Duplicate record">Duplicate record</option>
+                                <option value="Patient request">Patient request</option>
+                                <option value="Data error">Data entry error</option>
+                                <option value="Test record">Test record</option>
+                                <option value="Privacy compliance">Privacy compliance</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <strong>Type "delete" to confirm:</strong>
+                            </label>
+                            <input type="text" name="confirmation" class="form-control confirmation-input" 
+                                   placeholder="Type 'delete' here" required autocomplete="off">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-warning btn-lg w-100">
+                            <i class="bi bi-recycle"></i>
+                            Soft Delete Patient
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Hard Delete (Dangerous) -->
+            <div class="col-lg-6 mb-4">
+                <div class="danger-zone p-4">
+                    <h3 class="text-danger mb-3">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        Permanent Delete
+                    </h3>
+                    
+                    <div class="alert alert-danger">
+                        <strong>⚠️ WARNING:</strong> This will permanently delete all patient data and visits. This action CANNOT be undone!
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('delete_patient_route', patient_id=patient[0]) }}">
+                        <input type="hidden" name="action" value="hard_delete">
+                        
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Confirmation Code:</strong></label>
+                            <div class="alert alert-info mb-2">
+                                Required code: <code>DELETE-{{ patient[0] }}-PERMANENT</code>
+                            </div>
+                            <input type="text" name="confirmation_code" class="form-control confirmation-input" 
+                                   placeholder="Enter exact confirmation code" required autocomplete="off">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <strong>Type "delete" to double confirm:</strong>
+                            </label>
+                            <input type="text" name="confirmation" class="form-control confirmation-input" 
+                                   placeholder="Type 'delete' here" required autocomplete="off">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-danger btn-lg w-100" 
+                                onclick="return confirm('Are you ABSOLUTELY sure? This cannot be undone!')">
+                            <i class="bi bi-trash-fill"></i>
+                            PERMANENTLY DELETE
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Safety Information -->
+        <div class="row mt-4">
+            <div class="col">
+                <div class="alert alert-info">
+                    <h5><i class="bi bi-info-circle-fill"></i> Important Information:</h5>
+                    <ul class="mb-0">
+                        <li><strong>Soft Delete:</strong> Patient is hidden but data remains in database. Can be restored from Admin panel.</li>
+                        <li><strong>Hard Delete:</strong> All data is permanently removed. Use only for test records or legal compliance.</li>
+                        <li><strong>Audit Trail:</strong> All deletion actions are logged for security and compliance.</li>
+                        <li><strong>Backup:</strong> Daily backups are created automatically for additional protection.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Auto-focus on first input
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstInput = document.querySelector('select[name="reason"]');
+            if (firstInput) firstInput.focus();
+        });
+        
+        // Make confirmation inputs case-insensitive for better UX
+        document.querySelectorAll('input[name="confirmation"]').forEach(input => {
+            input.addEventListener('input', function() {
+                this.value = this.value.toLowerCase();
+            });
+        });
+    </script>
+</body>
+</html>

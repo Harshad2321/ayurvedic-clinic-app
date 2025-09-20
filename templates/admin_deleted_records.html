@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🗑️ Deleted Records - Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .admin-header {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(220, 53, 69, 0.3);
+        }
+        
+        .deleted-record {
+            background: #fff5f5;
+            border-left: 5px solid #dc3545;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .deleted-record:hover {
+            background: #fff0f0;
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.2);
+        }
+        
+        .restore-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .restore-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+            color: white;
+        }
+        
+        .back-btn {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+            color: white;
+        }
+        
+        .deletion-type {
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .soft-delete-badge {
+            background: linear-gradient(135deg, #fd7e14 0%, #e55d00 100%);
+        }
+        
+        .hard-delete-badge {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <!-- Header -->
+        <div class="admin-header p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="mb-1">
+                        <i class="bi bi-shield-lock"></i>
+                        Admin Panel - Deleted Records
+                    </h1>
+                    <p class="mb-0 opacity-75">Manage and restore deleted patient records</p>
+                </div>
+                <div>
+                    <a href="{{ url_for('dashboard') }}" class="btn back-btn me-2">
+                        <i class="bi bi-arrow-left"></i> Dashboard
+                    </a>
+                    <a href="{{ url_for('admin_audit_log') }}" class="btn btn-outline-light">
+                        <i class="bi bi-journal-text"></i> Audit Log
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="stats-card p-4 text-center">
+                    <h3 class="text-warning">
+                        <i class="bi bi-recycle"></i>
+                        {{ deleted_records|selectattr('2', 'equalto', 'soft')|list|length }}
+                    </h3>
+                    <p class="text-muted mb-0">Soft Deleted<br><small>(Recoverable)</small></p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stats-card p-4 text-center">
+                    <h3 class="text-danger">
+                        <i class="bi bi-trash-fill"></i>
+                        {{ deleted_records|selectattr('2', 'equalto', 'hard')|list|length }}
+                    </h3>
+                    <p class="text-muted mb-0">Hard Deleted<br><small>(Permanent)</small></p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stats-card p-4 text-center">
+                    <h3 class="text-primary">
+                        <i class="bi bi-archive"></i>
+                        {{ deleted_records|length }}
+                    </h3>
+                    <p class="text-muted mb-0">Total Deleted<br><small>(All types)</small></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deleted Records List -->
+        {% if deleted_records %}
+        <div class="row">
+            <div class="col">
+                <h3 class="mb-3">
+                    <i class="bi bi-list"></i>
+                    Deleted Records
+                </h3>
+                
+                {% for record in deleted_records %}
+                <div class="deleted-record p-4 mb-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h5 class="mb-1">
+                                <i class="bi bi-person-x"></i>
+                                Patient ID: {{ record[1] }}
+                                {% if record[2] == 'soft' %}
+                                <span class="badge deletion-type soft-delete-badge">
+                                    <i class="bi bi-recycle"></i> SOFT DELETE
+                                </span>
+                                {% else %}
+                                <span class="badge deletion-type hard-delete-badge">
+                                    <i class="bi bi-trash-fill"></i> HARD DELETE
+                                </span>
+                                {% endif %}
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>Deleted:</strong> {{ record[5][:19] }}</p>
+                                    <p class="mb-1"><strong>By:</strong> {{ record[4] }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>Reason:</strong> {{ record[3] or 'No reason provided' }}</p>
+                                    <p class="mb-1"><strong>Type:</strong> {{ record[0] }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            {% if record[6] %}
+                            <div class="mb-2">
+                                <small class="text-muted">Original Data Preview:</small>
+                                <div class="bg-light p-2 rounded small" style="max-height: 80px; overflow-y: auto;">
+                                    {{ record[6][:200] }}
+                                    {% if record[6]|length > 200 %}...{% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="text-end">
+                                {% if record[2] == 'soft' %}
+                                <form method="POST" action="{{ url_for('restore_patient_route', patient_id=record[1]) }}" 
+                                      style="display: inline;" 
+                                      onsubmit="return confirm('Restore this patient record?')">
+                                    <button type="submit" class="btn restore-btn">
+                                        <i class="bi bi-arrow-clockwise"></i>
+                                        Restore Patient
+                                    </button>
+                                </form>
+                                {% else %}
+                                <button class="btn btn-secondary" disabled>
+                                    <i class="bi bi-x-circle"></i>
+                                    Cannot Restore
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <div class="row">
+            <div class="col text-center">
+                <div class="alert alert-success">
+                    <h3><i class="bi bi-check-circle-fill"></i></h3>
+                    <h4>No Deleted Records</h4>
+                    <p class="mb-0">All patient records are active. No deletions have been performed.</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Information Panel -->
+        <div class="row mt-4">
+            <div class="col">
+                <div class="alert alert-info">
+                    <h5><i class="bi bi-info-circle-fill"></i> Deletion System Information:</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="mb-0">
+                                <li><strong>Soft Delete:</strong> Patient hidden but data preserved</li>
+                                <li><strong>Hard Delete:</strong> Data permanently removed</li>
+                                <li><strong>Audit Trail:</strong> All actions are logged</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="mb-0">
+                                <li><strong>Restoration:</strong> Only soft-deleted records can be restored</li>
+                                <li><strong>Compliance:</strong> System follows data protection guidelines</li>
+                                <li><strong>Security:</strong> Admin access required for all operations</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Add hover effects and animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate cards on scroll
+            const cards = document.querySelectorAll('.deleted-record, .stats-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+            
+            cards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'all 0.5s ease';
+                observer.observe(card);
+            });
+        });
+        
+        // Auto-refresh every 5 minutes
+        setTimeout(() => {
+            window.location.reload();
+        }, 300000);
+    </script>
+</body>
+</html>
