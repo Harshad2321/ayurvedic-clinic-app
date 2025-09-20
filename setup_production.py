@@ -29,10 +29,10 @@ def setup_render_environment():
         'SUPPORT_NAME': 'Harshad Agrawal',
         'SUPPORT_PHONE': '7622871384',
         'SUPPORT_EMAIL': 'harshadd.agrawal2005@gmail.com',
-        'DOCTOR_NAME': 'Dr. [Mom\'s Name]',
+        'DOCTOR_NAME': 'Dr. Sangita Agrawal',
         'CLINIC_NAME': 'Dhanvantari Clinic',
         'CLINIC_ADDRESS': 'Vapi - Namdha Rd, Khadkala, Gita Nagar, Vapi, Gujarat 396191',
-        'CLINIC_EMAIL': 'dhanvantariclinic@gmail.com',
+        'CLINIC_EMAIL': 'harshadd.agrawal2005@gmail.com',
         'CLINIC_PHONE': '9898143702',
         'FLASK_ENV': 'production'
     }
