@@ -237,8 +237,16 @@
     <!-- Footer -->
     <div class="footer">
         <div class="container">
-            <p><i class="fas fa-leaf"></i> Ayurvedic Clinic Management System | Built with ❤️ for better patient care</p>
-            <small>Press Alt+? for keyboard shortcuts</small>
+            {% if daily_health_fact %}
+            <p>
+                <i class="fas fa-leaf"></i> 
+                <strong>{{ daily_health_fact.category }}:</strong> {{ daily_health_fact.content }}
+                {% if daily_health_fact.benefit %} - <em>{{ daily_health_fact.benefit }}</em>{% endif %}
+            </p>
+            {% else %}
+            <p><i class="fas fa-leaf"></i> Ayurvedic Clinic Management System | Committed to Natural Healing & Wellness</p>
+            {% endif %}
+            <small>Press Alt+? for keyboard shortcuts | Dr. Harsh's Ayurvedic Clinic</small>
         </div>
     </div>
 

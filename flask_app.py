@@ -43,6 +43,15 @@ from modules.backup import (
 app = Flask(__name__)
 app.secret_key = 'ayurvedic_clinic_2025'  # Change this in production
 
+# Make health facts available globally in templates
+@app.context_processor
+def inject_health_facts():
+    """Make health facts available in all templates"""
+    return {
+        'daily_health_fact': get_daily_health_fact(),
+        'ayurvedic_tip_of_day': get_ayurvedic_tip_of_day()
+    }
+
 @app.route('/')
 def index():
     """Redirect to login if not authenticated, otherwise to dashboard"""
