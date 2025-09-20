@@ -40,8 +40,14 @@ from modules.backup import (
     auto_backup_if_needed, get_database_stats as get_backup_stats
 )
 
+from config import get_config
+
 app = Flask(__name__)
-app.secret_key = 'ayurvedic_clinic_2025'  # Change this in production
+
+# Configure app using secure configuration
+config = get_config()
+app.secret_key = config.SECRET_KEY
+app.config['DEBUG'] = config.DEBUG
 
 # Make health facts available globally in templates
 @app.context_processor

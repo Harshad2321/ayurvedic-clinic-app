@@ -18,6 +18,27 @@ var/
 wheels/
 *.egg-info/
 .installed.cfg
+
+# SENSITIVE FILES - NEVER COMMIT
+.env
+.env.local
+.env.production
+.env.development
+config_private.py
+secrets.py
+credentials.json
+auth_config.py
+
+# Database files with patient data
+*.db
+*.sqlite
+*.sqlite3
+database/
+backups/
+
+# Personal/Private configurations
+clinic_private.py
+private_settings.py
 *.egg
 
 # Virtual Environment

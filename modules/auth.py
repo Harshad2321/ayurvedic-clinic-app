@@ -1,16 +1,14 @@
 """
 Simple authentication system for Ayurvedic Clinic
-Secure login for clinic staff
+Secure login for clinic staff using environment variables
 """
 
 from functools import wraps
 from flask import session, request, redirect, url_for, flash
+from config import get_config
 
-# Clinic credentials (in production, use environment variables)
-CLINIC_CREDENTIALS = {
-    'mobile': '9898143702',
-    'pin': '1978'  # Mom's birth year PIN
-}
+# Get secure configuration
+config = get_config()
 
 def login_required(f):
     """Decorator to require login for protected routes"""
@@ -23,18 +21,21 @@ def login_required(f):
     return decorated_function
 
 def verify_credentials(mobile, pin):
-    """Verify login credentials"""
-    return (mobile == CLINIC_CREDENTIALS['mobile'] and 
-            pin == CLINIC_CREDENTIALS['pin'])
+    """Verify login credentials using secure configuration"""
+    credentials = config.get_auth_credentials()
+    return (mobile == credentials['mobile'] and pin == credentials['pin'])
 
 def get_clinic_info():
-    """Get clinic and doctor information"""
+    """Get clinic and doctor information from secure configuration"""
+    clinic_details = config.get_clinic_details()
+    support_contact = config.get_support_contact()
+    
     return {
-        'name': 'Dr. Harsh\'s Ayurvedic Clinic',
+        'name': clinic_details['clinic_name'],
         'tagline': 'Traditional Healing for Modern Wellness',
-        'doctor_name': 'Harsh',  # Update this with mom's name
-        'qualifications': 'BAMS, MD (Ayurveda)',  # Update with her qualifications
-        'experience': '15+ Years',  # Update with her experience
+        'doctor_name': clinic_details['doctor_name'],
+        'qualifications': 'BAMS, MD (Ayurveda)',  # Update with actual qualifications
+        'experience': '15+ Years',  # Update with actual experience
         'specializations': [
             'Panchakarma Treatments',
             'Chronic Disease Management', 
@@ -65,9 +66,9 @@ def get_clinic_info():
                 'description': 'Daily routine and seasonal lifestyle recommendations'
             }
         ],
-        'phone': '9898143702',
-        'email': 'clinic@ayurveda.com',  # Update with actual email
-        'address': 'Ayurvedic Clinic Address, City, State - 123456',  # Update address
+        'phone': config.CLINIC_MOBILE,  # Using the same mobile for clinic contact
+        'email': clinic_details['email'],
+        'address': clinic_details['address'],
         'operating_hours': {
             'monday': '9:00 AM - 6:00 PM',
             'tuesday': '9:00 AM - 6:00 PM',
@@ -78,10 +79,5 @@ def get_clinic_info():
             'sunday': 'Closed'
         },
         'philosophy': 'We believe in the ancient wisdom of Ayurveda combined with modern understanding to provide holistic healthcare. Our approach focuses on treating the root cause of illness while promoting overall wellness through natural healing methods, personalized treatments, and lifestyle guidance.',
-        'support_contact': {
-            'name': 'Harshad Agrawal',
-            'phone': '7622871384',
-            'email': 'harshadd.agrawal2005@gmail.com',
-            'role': 'Technical Support & App Administrator'
-        }
+        'support_contact': support_contact
     }
