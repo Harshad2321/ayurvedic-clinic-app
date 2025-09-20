@@ -37,19 +37,18 @@ app.secret_key = 'ayurvedic_clinic_2025'  # Change this in production
 
 @app.route('/')
 def dashboard():
-    """Main dashboard with automatic backup"""
-    # Check database and create backup if needed
-    success, message = init_database()
-    if not success:
-        flash(f'Database Error: {message}', 'error')
-    
-    # Auto backup check
-    backup_created, backup_message = auto_backup_if_needed()
-    if backup_created:
-        flash(f'🛡️ Automatic backup created: {backup_message}', 'info')
-    
-    # Get statistics
-    stats = get_database_stats()
+    """Main dashboard - optimized for cloud deployment"""
+    # Quick database check and initialization if needed
+    try:
+        stats = get_database_stats()
+    except Exception:
+        # Database doesn't exist yet, initialize it
+        try:
+            init_database()
+            stats = get_database_stats()
+        except Exception as e:
+            stats = {'total_patients': 0, 'total_visits': 0, 'recent_patients': 0, 'recent_visits': 0}
+            flash(f'Database initializing, please refresh page', 'info')
     
     # Get recent patients
     recent_patients = get_all_patients()[:5]  # Last 5 patients
@@ -67,24 +66,11 @@ from modules.backup import (
     auto_backup_if_needed, get_database_stats as get_backup_stats
 )
 
-app = Flask(__name__)
-app.secret_key = 'ayurvedic_clinic_2025'  # Change this in production
-
-@app.route('/')
-def dashboard():
-    """Main dashboard"""
-    # Initialize database
-    success, message = init_database()
-    if not success:
-        flash(f'Database Error: {message}', 'error')
-    
-    # Get statistics
-    stats = get_database_stats()
-    
-    # Get recent patients
-    recent_patients = get_all_patients()[:5]  # Last 5 patients
-    
-    return render_template('dashboard.html', stats=stats, recent_patients=recent_patients)
+# Health check route for deployment
+@app.route('/health')
+def health_check():
+    """Simple health check endpoint"""
+    return {'status': 'ok', 'message': 'Ayurvedic Clinic App is running'}
 
 @app.route('/add_patient', methods=['GET', 'POST'])
 def add_patient_route():
