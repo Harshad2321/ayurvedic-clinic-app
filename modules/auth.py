@@ -9,7 +9,7 @@ from flask import session, request, redirect, url_for, flash
 # Clinic credentials (in production, use environment variables)
 CLINIC_CREDENTIALS = {
     'mobile': '9898143702',
-    'pin': '1234'  # Simple 4-digit PIN for easy mobile use
+    'pin': '1978'  # Mom's birth year PIN
 }
 
 def login_required(f):
@@ -77,5 +77,11 @@ def get_clinic_info():
             'saturday': '9:00 AM - 2:00 PM',
             'sunday': 'Closed'
         },
-        'philosophy': 'We believe in the ancient wisdom of Ayurveda combined with modern understanding to provide holistic healthcare. Our approach focuses on treating the root cause of illness while promoting overall wellness through natural healing methods, personalized treatments, and lifestyle guidance.'
+        'philosophy': 'We believe in the ancient wisdom of Ayurveda combined with modern understanding to provide holistic healthcare. Our approach focuses on treating the root cause of illness while promoting overall wellness through natural healing methods, personalized treatments, and lifestyle guidance.',
+        'support_contact': {
+            'name': 'Harshad Agrawal',
+            'phone': '7622871384',
+            'email': 'harshadd.agrawal2005@gmail.com',
+            'role': 'Technical Support & App Administrator'
+        }
     }

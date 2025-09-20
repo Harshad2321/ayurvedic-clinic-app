@@ -10,6 +10,9 @@
                 <i class="fas fa-leaf"></i> Ayurvedic Clinic Management System
             </h1>
             <div>
+                <button type="button" class="btn btn-outline-info btn-sm me-2" data-bs-toggle="modal" data-bs-target="#helpModal">
+                    <i class="fas fa-question-circle"></i> Help
+                </button>
                 <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </a>
@@ -198,4 +201,76 @@
     </div>
 </div>
 {% endif %}
+
+<!-- Help Modal -->
+<div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="helpModalLabel">
+                    <i class="fas fa-question-circle me-2"></i>Help & Support
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-primary"><i class="fas fa-user-md me-2"></i>Clinic Operations</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><strong>Add Patients:</strong> Use the "Add New Patient" button</li>
+                            <li class="mb-2"><strong>Search:</strong> Find patients by name or phone number</li>
+                            <li class="mb-2"><strong>Record Visits:</strong> Click on any patient to add visit details</li>
+                            <li class="mb-2"><strong>View History:</strong> Access complete patient visit history</li>
+                        </ul>
+                        
+                        <h6 class="text-primary mt-4"><i class="fas fa-keyboard me-2"></i>Quick Tips</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">• Use search to quickly find existing patients</li>
+                            <li class="mb-2">• Double-check patient details before saving</li>
+                            <li class="mb-2">• Record weight and vital signs for better tracking</li>
+                            <li class="mb-2">• Add detailed notes for each visit</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-primary"><i class="fas fa-headset me-2"></i>Technical Support</h6>
+                        <div class="bg-light p-3 rounded">
+                            <h6 class="text-dark mb-3">Contact for help with:</h6>
+                            <ul class="list-unstyled text-dark">
+                                <li>• Login issues</li>
+                                <li>• App not working properly</li>
+                                <li>• Questions about features</li>
+                                <li>• Any technical problems</li>
+                            </ul>
+                            
+                            <hr>
+                            
+                            <div class="text-center">
+                                <h6 class="text-primary mb-2">Harshad Agrawal</h6>
+                                <p class="mb-1"><strong>App Developer & Support</strong></p>
+                                <p class="mb-1">
+                                    <i class="fas fa-phone me-2"></i>
+                                    <a href="tel:7622871384" class="text-decoration-none">7622871384</a>
+                                </p>
+                                <p class="mb-0">
+                                    <i class="fas fa-envelope me-2"></i>
+                                    <a href="mailto:harshadd.agrawal2005@gmail.com" class="text-decoration-none">
+                                        harshadd.agrawal2005@gmail.com
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3 p-2 bg-success text-white rounded text-center">
+                            <small><i class="fas fa-clock me-1"></i>Usually responds within a few hours</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="/clinic-info" class="btn btn-primary">View Clinic Info</a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
