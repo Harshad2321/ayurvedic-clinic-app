@@ -30,20 +30,52 @@ def verify_credentials(mobile, pin):
 def get_clinic_info():
     """Get clinic and doctor information"""
     return {
-        'doctor_name': 'Dr. [Your Mom\'s Name]',  # Update this with her name
+        'name': 'Dr. Harsh\'s Ayurvedic Clinic',
+        'tagline': 'Traditional Healing for Modern Wellness',
+        'doctor_name': 'Harsh',  # Update this with mom's name
         'qualifications': 'BAMS, MD (Ayurveda)',  # Update with her qualifications
-        'specialization': 'Ayurvedic Medicine & Panchakarma',
         'experience': '15+ Years',  # Update with her experience
-        'clinic_name': 'Shanti Ayurvedic Clinic',  # Update clinic name
-        'address': 'Your Clinic Address, City, State - 123456',  # Update address
-        'phone': '9898143702',
-        'consultation_hours': 'Mon-Sat: 9:00 AM - 6:00 PM',
-        'specialties': [
+        'specializations': [
             'Panchakarma Treatments',
             'Chronic Disease Management', 
             'Women\'s Health',
             'Digestive Disorders',
             'Stress & Anxiety Treatment',
             'Lifestyle Counseling'
-        ]
+        ],
+        'services': [
+            {
+                'name': 'Traditional Consultation',
+                'description': 'Comprehensive Ayurvedic health assessment with pulse diagnosis'
+            },
+            {
+                'name': 'Panchakarma Therapy',
+                'description': 'Complete detoxification and rejuvenation treatments'
+            },
+            {
+                'name': 'Herbal Medicine',
+                'description': 'Custom herbal formulations for various health conditions'
+            },
+            {
+                'name': 'Dietary Counseling',
+                'description': 'Personalized nutrition guidance based on Ayurvedic principles'
+            },
+            {
+                'name': 'Lifestyle Guidance',
+                'description': 'Daily routine and seasonal lifestyle recommendations'
+            }
+        ],
+        'phone': '9898143702',
+        'email': 'clinic@ayurveda.com',  # Update with actual email
+        'address': 'Ayurvedic Clinic Address, City, State - 123456',  # Update address
+        'operating_hours': {
+            'monday': '9:00 AM - 6:00 PM',
+            'tuesday': '9:00 AM - 6:00 PM',
+            'wednesday': '9:00 AM - 6:00 PM',
+            'thursday': '9:00 AM - 6:00 PM',
+            'friday': '9:00 AM - 6:00 PM',
+            'saturday': '9:00 AM - 2:00 PM',
+            'sunday': 'Closed'
+        },
+        'philosophy': 'We believe in the ancient wisdom of Ayurveda combined with modern understanding to provide holistic healthcare. Our approach focuses on treating the root cause of illness while promoting overall wellness through natural healing methods, personalized treatments, and lifestyle guidance.'
     }
