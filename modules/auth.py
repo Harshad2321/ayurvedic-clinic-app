@@ -32,17 +32,18 @@ def get_clinic_info():
     
     return {
         'name': clinic_details['clinic_name'],
-        'tagline': 'Traditional Healing for Modern Wellness',
+        'tagline': 'Traditional Ayurvedic Healing & Wellness - Women-Owned Clinic',
         'doctor_name': clinic_details['doctor_name'],
         'qualifications': 'BAMS, MD (Ayurveda)',  # Update with actual qualifications
         'experience': '15+ Years',  # Update with actual experience
         'specializations': [
+            'Traditional Ayurvedic Consultation',
             'Panchakarma Treatments',
             'Chronic Disease Management', 
-            'Women\'s Health',
+            'Women\'s Health & Wellness',
             'Digestive Disorders',
             'Stress & Anxiety Treatment',
-            'Lifestyle Counseling'
+            'Lifestyle & Dietary Counseling'
         ],
         'services': [
             {
@@ -64,20 +65,28 @@ def get_clinic_info():
             {
                 'name': 'Lifestyle Guidance',
                 'description': 'Daily routine and seasonal lifestyle recommendations'
+            },
+            {
+                'name': 'Women\'s Health',
+                'description': 'Specialized Ayurvedic care for women\'s health concerns'
             }
         ],
-        'phone': config.CLINIC_MOBILE,  # Using the same mobile for clinic contact
+        'phone': clinic_details['phone'],
         'email': clinic_details['email'],
         'address': clinic_details['address'],
+        'location': 'Vapi, Gujarat',
+        'coordinates': '9W92+Q3 Vapi, Gujarat',
+        'rating': '5.0 stars (Google Reviews)',
+        'business_type': 'Women-Owned Ayurvedic Clinic',
         'operating_hours': {
-            'monday': '9:00 AM - 6:00 PM',
-            'tuesday': '9:00 AM - 6:00 PM',
-            'wednesday': '9:00 AM - 6:00 PM',
-            'thursday': '9:00 AM - 6:00 PM',
-            'friday': '9:00 AM - 6:00 PM',
-            'saturday': '9:00 AM - 2:00 PM',
+            'monday': '9:30 AM - 2:00 PM, 5:00 PM - 8:30 PM',
+            'tuesday': '9:30 AM - 2:00 PM, 5:00 PM - 8:30 PM',
+            'wednesday': '9:30 AM - 2:00 PM, 5:00 PM - 8:30 PM',
+            'thursday': '9:30 AM - 2:00 PM, 5:00 PM - 8:30 PM',
+            'friday': '9:30 AM - 2:00 PM, 5:00 PM - 8:30 PM',
+            'saturday': '9:30 AM - 2:00 PM, 5:00 PM - 8:30 PM',
             'sunday': 'Closed'
         },
-        'philosophy': 'We believe in the ancient wisdom of Ayurveda combined with modern understanding to provide holistic healthcare. Our approach focuses on treating the root cause of illness while promoting overall wellness through natural healing methods, personalized treatments, and lifestyle guidance.',
+        'philosophy': 'Dhanvantari Clinic is a women-owned Ayurvedic practice located in the heart of Vapi, Gujarat. We believe in the ancient wisdom of Ayurveda combined with modern understanding to provide holistic healthcare. Our approach focuses on treating the root cause of illness while promoting overall wellness through natural healing methods, personalized treatments, and comprehensive lifestyle guidance.',
         'support_contact': support_contact
     }

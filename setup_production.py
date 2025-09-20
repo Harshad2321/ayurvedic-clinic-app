@@ -29,10 +29,11 @@ def setup_render_environment():
         'SUPPORT_NAME': 'Harshad Agrawal',
         'SUPPORT_PHONE': '7622871384',
         'SUPPORT_EMAIL': 'harshadd.agrawal2005@gmail.com',
-        'DOCTOR_NAME': 'Dr. Mom\'s Name',
-        'CLINIC_NAME': 'Dr. Harsh\'s Ayurvedic Clinic',
-        'CLINIC_ADDRESS': 'Your Clinic Address, City, State - 123456',
-        'CLINIC_EMAIL': 'clinic@ayurveda.com',
+        'DOCTOR_NAME': 'Dr. [Mom\'s Name]',
+        'CLINIC_NAME': 'Dhanvantari Clinic',
+        'CLINIC_ADDRESS': 'Vapi - Namdha Rd, Khadkala, Gita Nagar, Vapi, Gujarat 396191',
+        'CLINIC_EMAIL': 'dhanvantariclinic@gmail.com',
+        'CLINIC_PHONE': '9898143702',
         'FLASK_ENV': 'production'
     }
     

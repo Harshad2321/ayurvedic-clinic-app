@@ -30,6 +30,7 @@ class Config:
     CLINIC_NAME = os.getenv('CLINIC_NAME', 'Ayurvedic Clinic')
     CLINIC_ADDRESS = os.getenv('CLINIC_ADDRESS', 'Clinic Address')
     CLINIC_EMAIL = os.getenv('CLINIC_EMAIL', 'clinic@example.com')
+    CLINIC_PHONE = os.getenv('CLINIC_PHONE', '9898143702')
     
     @classmethod
     def get_auth_credentials(cls):
@@ -56,7 +57,8 @@ class Config:
             'doctor_name': cls.DOCTOR_NAME,
             'clinic_name': cls.CLINIC_NAME,
             'address': cls.CLINIC_ADDRESS,
-            'email': cls.CLINIC_EMAIL
+            'email': cls.CLINIC_EMAIL,
+            'phone': cls.CLINIC_PHONE
         }
 
 # Production Configuration
