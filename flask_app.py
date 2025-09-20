@@ -3,7 +3,7 @@ Flask Web Application for Ayurvedic Clinic Management
 Simple, fast, and easy-to-use interface for clinic management
 """
 
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
 from datetime import datetime, date
 import sys
 import os
@@ -27,6 +27,14 @@ from modules.validation import (
     sanitize_input, format_phone_number, get_validation_summary
 )
 
+from modules.auth import (
+    login_required, verify_credentials, get_clinic_info
+)
+
+from modules.health_facts import (
+    get_daily_health_fact, get_ayurvedic_tip_of_day, get_random_health_fact
+)
+
 from modules.backup import (
     create_backup, get_backup_list, restore_backup, verify_database_integrity,
     auto_backup_if_needed, get_database_stats as get_backup_stats
@@ -36,6 +44,14 @@ app = Flask(__name__)
 app.secret_key = 'ayurvedic_clinic_2025'  # Change this in production
 
 @app.route('/')
+def index():
+    """Redirect to login if not authenticated, otherwise to dashboard"""
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+    return redirect(url_for('dashboard'))
+
+@app.route('/dashboard')
+@login_required
 def dashboard():
     """Main dashboard - optimized for cloud deployment"""
     # Quick database check and initialization if needed
@@ -56,10 +72,14 @@ def dashboard():
     # Get backup status
     backup_stats = get_backup_stats()
     
+    # Get health tip for dashboard
+    health_tip = get_daily_health_fact()
+    
     return render_template('dashboard.html', 
                          stats=stats, 
                          recent_patients=recent_patients,
-                         backup_stats=backup_stats)
+                         backup_stats=backup_stats,
+                         health_tip=health_tip)
 
 from modules.backup import (
     create_backup, get_backup_list, restore_backup, verify_database_integrity,
@@ -72,7 +92,44 @@ def health_check():
     """Simple health check endpoint"""
     return {'status': 'ok', 'message': 'Ayurvedic Clinic App is running'}
 
+# ==========================================
+# AUTHENTICATION ROUTES
+# ==========================================
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """Login page for clinic staff"""
+    if request.method == 'POST':
+        mobile = request.form.get('mobile', '').strip()
+        pin = request.form.get('pin', '').strip()
+        
+        if verify_credentials(mobile, pin):
+            session['logged_in'] = True
+            session['user_mobile'] = mobile
+            flash('🏥 Welcome to your Ayurvedic Clinic Management System!', 'success')
+            return redirect(url_for('dashboard'))
+        else:
+            flash('❌ Invalid mobile number or PIN. Please try again.', 'error')
+    
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    """Logout and clear session"""
+    session.clear()
+    flash('👋 You have been logged out successfully.', 'info')
+    return redirect(url_for('login'))
+
+# Public clinic information page
+@app.route('/clinic-info')
+def clinic_info():
+    """Public page showing clinic information"""
+    clinic_data = get_clinic_info()
+    health_tip = get_ayurvedic_tip_of_day()
+    return render_template('clinic_info.html', clinic=clinic_data, health_tip=health_tip)
+
 @app.route('/add_patient', methods=['GET', 'POST'])
+@login_required
 def add_patient_route():
     """Add new patient with comprehensive validation"""
     if request.method == 'POST':
@@ -203,6 +260,7 @@ def merge_patients():
         return redirect(url_for('dashboard'))
 
 @app.route('/search')
+@login_required
 def search():
     """Search patients with validation"""
     search_term = sanitize_input(request.args.get('q', ''))
@@ -221,6 +279,7 @@ def search():
     return render_template('search.html', patients=patients, search_term=search_term)
 
 @app.route('/patient/<int:patient_id>')
+@login_required
 def patient_details(patient_id):
     """Patient details and visit management"""
     summary = get_patient_summary(patient_id)
@@ -356,6 +415,7 @@ def api_patient_info(patient_id):
         return jsonify({'success': False, 'message': 'Patient not found'})
 
 @app.route('/all_patients')
+@login_required
 def all_patients():
     """Show all patients with visit counts"""
     patients = get_all_patients()
@@ -448,12 +508,14 @@ def delete_visit_route(visit_id):
     return redirect(url_for('dashboard'))
 
 @app.route('/admin/deleted_records')
+@login_required
 def admin_deleted_records():
     """Admin view of deleted records"""
     deleted_records = get_deleted_records(100)
     return render_template('admin_deleted_records.html', deleted_records=deleted_records)
 
 @app.route('/admin/audit_log')
+@login_required
 def admin_audit_log():
     """Admin view of audit log"""
     audit_logs = get_audit_log(200)

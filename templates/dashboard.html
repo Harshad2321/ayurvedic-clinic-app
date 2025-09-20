@@ -5,9 +5,16 @@
 {% block content %}
 <div class="row">
     <div class="col-12">
-        <h1 class="text-center mb-4" style="color: #2E8B57;">
-            <i class="fas fa-leaf"></i> Ayurvedic Clinic Management System
-        </h1>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="text-center" style="color: #2E8B57;">
+                <i class="fas fa-leaf"></i> Ayurvedic Clinic Management System
+            </h1>
+            <div>
+                <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -50,6 +57,27 @@
         </div>
     </div>
 </div>
+
+<!-- Daily Health Tip -->
+{% if health_tip %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white;">
+            <div class="card-header" style="background: transparent; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                <h5 class="mb-0">
+                    <i class="fas fa-lightbulb"></i> Daily Health Tip - {{ health_tip.category }}
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="lead mb-2">{{ health_tip.content }}</p>
+                {% if health_tip.benefit %}
+                <p class="mb-0"><strong>Benefit:</strong> {{ health_tip.benefit }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 
 <!-- Quick Actions -->
 <div class="row mb-4">

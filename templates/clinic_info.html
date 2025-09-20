@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏥 Ayurvedic Clinic - Professional Services</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #e8f5e8 0%, #f8f9fa 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+        }
+        
+        .hero-section h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .hero-section p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .info-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: transform 0.3s ease;
+        }
+        
+        .info-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .info-card h3 {
+            color: #28a745;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .info-card .icon {
+            font-size: 2.5rem;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+        
+        .service-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .service-item h5 {
+            color: #28a745;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .health-tip-section {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 40px 0;
+        }
+        
+        .health-tip-section h3 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .contact-info {
+            background: #28a745;
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .contact-info h3 {
+            margin-bottom: 20px;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .contact-item i {
+            margin-right: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .btn-back {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 40px 0;
+            }
+            
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+            
+            .info-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <h1>🏥 {{ clinic.name }}</h1>
+            <p>{{ clinic.tagline }}</p>
+        </div>
+    </div>
+    
+    <div class="container my-5">
+        <!-- Doctor Information -->
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="info-card text-center">
+                    <div class="icon">
+                        <i class="bi bi-person-badge"></i>
+                    </div>
+                    <h3>Dr. {{ clinic.doctor_name }}</h3>
+                    <h5 class="text-muted mb-3">{{ clinic.qualifications }}</h5>
+                    <p><strong>Experience:</strong> {{ clinic.experience }}</p>
+                    <p><strong>Specialization:</strong></p>
+                    <ul class="list-unstyled">
+                        {% for specialty in clinic.specializations %}
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle text-success me-2"></i>
+                            {{ specialty }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Services Offered -->
+            <div class="col-lg-6 mb-4">
+                <div class="info-card">
+                    <div class="icon">
+                        <i class="bi bi-heart-pulse"></i>
+                    </div>
+                    <h3>Services Offered</h3>
+                    {% for service in clinic.services %}
+                    <div class="service-item">
+                        <h5>{{ service.name }}</h5>
+                        <p class="mb-0 text-muted">{{ service.description }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Health Tip Section -->
+        {% if health_tip %}
+        <div class="health-tip-section">
+            <h3><i class="bi bi-lightbulb me-2"></i>Daily Health Tip</h3>
+            <div class="text-center">
+                <h4>{{ health_tip.category }}</h4>
+                <p class="lead">{{ health_tip.content }}</p>
+                {% if health_tip.benefit %}
+                <p><strong>Benefit:</strong> {{ health_tip.benefit }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Contact Information -->
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="contact-info">
+                    <h3><i class="bi bi-telephone me-2"></i>Contact Information</h3>
+                    <div class="contact-item">
+                        <i class="bi bi-phone"></i>
+                        <span>{{ clinic.phone }}</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="bi bi-envelope"></i>
+                        <span>{{ clinic.email }}</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="bi bi-geo-alt"></i>
+                        <span>{{ clinic.address }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Operating Hours -->
+            <div class="col-lg-6 mb-4">
+                <div class="info-card">
+                    <div class="icon">
+                        <i class="bi bi-clock"></i>
+                    </div>
+                    <h3>Operating Hours</h3>
+                    {% for day, hours in clinic.operating_hours.items() %}
+                    <div class="d-flex justify-content-between mb-2">
+                        <strong>{{ day.title() }}:</strong>
+                        <span class="text-muted">{{ hours }}</span>
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="mt-3 p-3 bg-light rounded">
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Please call ahead to confirm availability and book appointments.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Philosophy -->
+        <div class="info-card text-center">
+            <div class="icon">
+                <i class="bi bi-yin-yang"></i>
+            </div>
+            <h3>Our Philosophy</h3>
+            <p class="lead">{{ clinic.philosophy }}</p>
+        </div>
+        
+        <!-- Back to Login -->
+        <div class="text-center mt-5">
+            <a href="/" class="btn-back">
+                <i class="bi bi-arrow-left me-2"></i>
+                Back to Login
+            </a>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-4 mt-5">
+        <div class="container">
+            <p class="mb-0">
+                &copy; 2025 {{ clinic.name }} | 
+                <i class="bi bi-heart-fill text-danger"></i> 
+                Committed to Natural Healing & Wellness
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
