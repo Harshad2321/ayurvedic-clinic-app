@@ -1,18 +1,8 @@
-version: 2
-build:
-  - name: web
-    env: python
-    buildCommand: |
-      pip install -r requirements.txt
-      python -c "from modules.database import init_database; init_database()"
-    startCommand: gunicorn --bind 0.0.0.0:$PORT flask_app:app
 services:
   - type: web
     name: ayurvedic-clinic
     env: python
-    buildCommand: |
-      pip install -r requirements.txt
-      python -c "from modules.database import init_database; init_database()"
+    buildCommand: pip install -r requirements.txt
     startCommand: gunicorn --bind 0.0.0.0:$PORT flask_app:app
     envVars:
       - key: PYTHON_VERSION
